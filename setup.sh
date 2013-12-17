@@ -27,8 +27,8 @@ fi
 echo $GREEN"Extracting..."$RESET;
 sudo tar --overwrite -xvjf ./installation/downloads/st2.tar.bz2 -C /opt > /dev/null;
 sudo mv /opt/Sublime\ Text\ 2/ /opt/sublime-text-2;
-ln -sf /usr/bin/subl /opt/sublime-text-2/sublime_text;
-ln -sf /usr/bin/sublime /opt/sublime-text-2/sublime_text;
+sudo ln -sf /opt/sublime-text-2/sublime_text /usr/bin/subl;
+sudo ln -sf /opt/sublime-text-2/sublime_text /usr/bin/sublime;
 
 
 # Output package control installation command

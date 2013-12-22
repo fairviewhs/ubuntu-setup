@@ -25,9 +25,10 @@ if [[ $(git config --global user.email) = "" ]]; then
   git config --global user.email "$gitemail"
 fi
 
-# Set git alias for status and color to auto
+# Set git alias, color to auto, and credential cache
 git config --global alias.s status
 git config --global color.ui auto
+git config credential.helper 'cache --timeout=900'
 
 # Only run if sublime text is not installed
 if [[ $(subl -v) = "" ]]; then

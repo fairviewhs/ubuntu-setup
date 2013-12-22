@@ -35,11 +35,11 @@ if [[ $(subl -v) = "" ]]; then
   echo $GREEN"Installing Sublime Text 2..."$RESET
   # Download Sublime Text 2
   if [[ $(getconf LONG_BIT) = "64" ]]; then
-      echo $GREEN"Downloading 64 bit version of Sublime Text 2..."$RESET
-      wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2"
+    echo $GREEN"Downloading 64 bit version of Sublime Text 2..."$RESET
+    wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2"
   else
-      echo $GREEN"Downloading 32 bit version of Sublime Text 2..."$RESET
-      wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2"
+    echo $GREEN"Downloading 32 bit version of Sublime Text 2..."$RESET
+    wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2"
   fi
 
   # Extract ST2
@@ -63,19 +63,42 @@ fi
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Updating software..."$RESET
-if [[ $(node -v | grep -q "No such file or directory") ]]; then
-  sudo add-apt-repository ppa:chris-lea/node.js
-fi
 sudo apt-get -qq update
 sudo apt-get -y upgrade
-sudo apt-get -y install libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev curl python-software-properties nodejs
+
+# Install node.js
+if [[ ! $(command -v node) ]]; then
+  sudo add-apt-repository ppa:chris-lea/node.js
+  sudo apt-get -y install nodejs
+fi
+
+# Install and set up postgresql:
+# http://wiki.postgresql.org/wiki/Apt
+if [[ ! $(command -v psql) ]]; then
+  if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
+    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ squeeze-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+  fi
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+  sudo apt-get -qq update
+  sudo apt-get -y install postgresql-9.3 pgadmin3 libpq-dev
+
+  read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
+  sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
+  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_development
+  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_test
+fi
+
+# Install miscellaneous other packages for Ruby/Rails
+sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install rvm, ruby, and required packages
 if [[ ! $(command -v ruby) ]]; then
   echo $GREEN"Starting installation of rvm..."$RESET
   curl -L https://get.rvm.io | bash -s stable
   source ~/.rvm/scripts/rvm
-  echo "source ~/.bash_profile" >> ~/.bashrc
+  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
+    echo "source ~/.bash_profile" >> ~/.bashrc
+  fi
   rvm get head --autolibs=3
   rvm requirements
   rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/usr

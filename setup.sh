@@ -63,13 +63,14 @@ fi
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Updating software..."$RESET
-sudo apt-get -qq update
+sudo apt-get update
 sudo apt-get -y upgrade
 
 # Install node.js
 if [[ ! $(command -v node) ]]; then
   sudo add-apt-repository ppa:chris-lea/node.js
-  sudo apt-get -y install nodejs
+  sudo apt-get update
+  sudo apt-get -y install nodejs npm
 fi
 
 # Install and set up postgresql:

@@ -30,43 +30,19 @@ git config --global alias.s status
 git config --global color.ui auto
 git config credential.helper 'cache --timeout=900'
 
-# Only run if sublime text is not installed
-if [[ $(subl -v) = "" ]]; then
-  echo $GREEN"Installing Sublime Text 2..."$RESET
-  # Download Sublime Text 2
-  if [[ $(getconf LONG_BIT) = "64" ]]; then
-    echo $GREEN"Downloading 64 bit version of Sublime Text 2..."$RESET
-    wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2%20x64.tar.bz2"
-  else
-    echo $GREEN"Downloading 32 bit version of Sublime Text 2..."$RESET
-    wget -c -O ./installation/downloads/st2.tar.bz2 "http://c758482.r82.cf2.rackcdn.com/Sublime%20Text%202.0.2.tar.bz2"
-  fi
-
-  # Extract ST2
-  echo $GREEN"Extracting..."$RESET
-  sudo tar --overwrite -xvjf ./installation/downloads/st2.tar.bz2 -C /opt > /dev/null
-  sudo rm -rf /opt/sublime-text-2/
-  sudo mv /opt/Sublime\ Text\ 2/ /opt/sublime-text-2/
-  sudo ln -sf /opt/sublime-text-2/sublime_text /usr/bin/subl
-  sudo ln -sf /opt/sublime-text-2/sublime_text /usr/bin/sublime
-
-  # Open ST2 to create config folder and load settings from the files folder
-  subl &
-  cp -f ./files/Preferences.sublime-settings ~/.config/sublime-text-2/Packages/User/Preferences.sublime-settings
-
-  # Output package control installation command and instructions
-  echo $GREEN$BOLD"  Open the 'View' menu and click on 'Show Console' in Sublime Text. Then enter the following command to install Package Control:"$RESET
-  cat ./output-snippets/package-control.txt
-  echo $GREEN"After entering the command, please exit Sublime Text again. When ready, press [Enter] to continue."$RESET
-  read
-fi
-
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Updating software..."$RESET
 sudo apt-get update
 sudo apt-get -y upgrade
 
-# Install node.js
+# Install atom editor
+if [[ ! $(command -v atom) ]]; then
+  sudo add-apt-repository ppa:webupd8team/atom
+  sudo apt-get update
+  sudo apt-get -y install atom
+fi
+
+# Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
   sudo add-apt-repository ppa:chris-lea/node.js
   sudo apt-get update
@@ -83,8 +59,11 @@ if [[ ! $(command -v psql) ]]; then
   sudo apt-get -qq update
   sudo apt-get -y install postgresql-9.3 pgadmin3 libpq-dev
 
+  # Create user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
+
+  # Create development and test databases for the fhs-rails application
   createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_development
   createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_test
 fi

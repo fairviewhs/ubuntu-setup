@@ -11,9 +11,6 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-# Directory setup
-mkdir -p ./installation/downloads
-
 # Set git user name and email if not set
 echo $GREEN"Updating git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
@@ -40,6 +37,7 @@ if [[ ! $(command -v atom) ]]; then
   sudo add-apt-repository ppa:webupd8team/atom
   sudo apt-get update
   sudo apt-get -y install atom
+  apm install atom-lint merge-conflicts tabs-to-spaces
 fi
 
 # Install node.js for an execjs runtime

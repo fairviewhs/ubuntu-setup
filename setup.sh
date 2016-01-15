@@ -57,7 +57,7 @@ if [[ ! $(command -v psql) ]]; then
   sudo apt-get -qq update
   sudo apt-get -y install postgresql-9.3 pgadmin3 libpq-dev
 
-  # Create user to access postgresql database
+  # Create user with the same name as the current user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
 
@@ -66,7 +66,7 @@ if [[ ! $(command -v psql) ]]; then
   createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_test
 fi
 
-# Install miscellaneous other packages for Ruby/Rails
+# Install other miscellaneous packages for Ruby/Rails
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install rvm, ruby, and required packages

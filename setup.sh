@@ -55,7 +55,7 @@ if [[ ! $(command -v psql) ]]; then
   fi
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   sudo apt-get -qq update
-  sudo apt-get -y install postgresql-9.3 pgadmin3 libpq-dev
+  sudo apt-get -y install postgresql-9.4 pgadmin3 libpq-dev
 
   # Create user with the same name as the current user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass

@@ -84,4 +84,3 @@ if [[ ! $(command -v ruby) ]]; then
   rvm reload
 fi
 
-exit 0

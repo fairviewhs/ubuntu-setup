@@ -32,12 +32,17 @@ echo $GREEN"Updating software..."$RESET
 sudo apt-get update
 sudo apt-get -y upgrade
 
-# Install atom editor
+# Prompt to install Atom editor (optional, but recommended)
 if [[ ! $(command -v atom) ]]; then
-  sudo add-apt-repository ppa:webupd8team/atom
-  sudo apt-get update
-  sudo apt-get -y install atom
-  apm install atom-lint merge-conflicts tabs-to-spaces
+  read -p "Do you want to install the Atom editor? " -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    sudo add-apt-repository ppa:webupd8team/atom
+    sudo apt-get update
+    sudo apt-get -y install atom
+    apm install atom-lint merge-conflicts tabs-to-spaces
+  fi
 fi
 
 # Install node.js for an execjs runtime

@@ -12,7 +12,7 @@ BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
 # Set git user name and email if not set
-echo $GREEN"Updating git settings..."$RESET
+echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
   read -p "Enter the name you want to appear for your git commits: " gitname
   git config --global user.name "$gitname"
@@ -28,8 +28,8 @@ git config --global color.ui auto
 git config credential.helper 'cache --timeout=900'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
-echo $GREEN"Updating software..."$RESET
-sudo apt-get update
+echo $GREEN"Upgrading software packages..."$RESET
+sudo apt-get -qq update
 sudo apt-get -y upgrade
 
 # Prompt to install Atom editor (optional, but recommended)
@@ -39,7 +39,7 @@ if [[ ! $(command -v atom) ]]; then
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
     sudo add-apt-repository ppa:webupd8team/atom
-    sudo apt-get update
+    sudo apt-get -qq update
     sudo apt-get -y install atom
     apm install atom-lint merge-conflicts tabs-to-spaces
   fi
@@ -47,14 +47,18 @@ fi
 
 # Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
+  echo $GREEN"Installing node.js..."$RESET
+
   sudo add-apt-repository ppa:chris-lea/node.js
-  sudo apt-get update
+  sudo apt-get -qq update
   sudo apt-get -y install nodejs npm
 fi
 
 # Install and set up postgresql:
 # http://wiki.postgresql.org/wiki/Apt
 if [[ ! $(command -v psql) ]]; then
+  echo $GREEN"Installing PostgreSQL..."$RESET
+
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
     sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ squeeze-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   fi
@@ -77,11 +81,13 @@ sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev
 # Install rvm, ruby, and required packages
 if [[ ! $(command -v ruby) ]]; then
   echo $GREEN"Starting installation of rvm..."$RESET
+
   curl -L https://get.rvm.io | bash -s stable
   source ~/.rvm/scripts/rvm
   if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
     echo "source ~/.bash_profile" >> ~/.bashrc
   fi
+
   rvm get head --autolibs=3
   rvm requirements
   rvm install 2.2.3 --with-openssl-dir=$HOME/.rvm/usr

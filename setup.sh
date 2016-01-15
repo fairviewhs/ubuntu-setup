@@ -79,8 +79,8 @@ if [[ ! $(command -v ruby) ]]; then
   fi
   rvm get head --autolibs=3
   rvm requirements
-  rvm install 2.0.0 --with-openssl-dir=$HOME/.rvm/usr
-  rvm use --default 2.0.0
+  rvm install 2.2.3 --with-openssl-dir=$HOME/.rvm/usr
+  rvm use --default 2.2.3
   rvm reload
 fi
 

@@ -11,10 +11,12 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
+RubyVersion="2.2.3"
+
 # Set git user name and email if not set
 echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
-  read -p "Enter the name you want to appear for your git commits: " gitname
+  read -p "Enter github account name: " gitname
   git config --global user.name "$gitname"
 fi
 if [[ $(git config --global user.email) = "" ]]; then
@@ -90,8 +92,26 @@ if [[ ! $(command -v ruby) ]]; then
 
   rvm get head --autolibs=3
   rvm requirements
-  rvm install 2.2.3 --with-openssl-dir=$HOME/.rvm/usr
-  rvm use --default 2.2.3
+  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
+  rvm use --default $RubyVersion
   rvm reload
 fi
 
+read -p "Do you want to clone and setup the Fairview site repository (an new fork will be created if needed)? " -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  cd ..
+  read -s -p "Enter password for "$(git config --global user.name)": " PW
+  echo
+  curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null
+  curl -s -u $(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+  sleep 60
+  git clone https://$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git
+  cd fhs-rails
+  gem install bundler
+  bundle install
+  cp config/secrets.yml.sample config/secrets.yml
+  cp config/database.yml.sample config/database.yml
+  rake db:setup
+fi

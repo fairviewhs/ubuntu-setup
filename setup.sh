@@ -14,7 +14,7 @@ LINE=$(tput sgr 0 1)
 RubyVersion="2.2.3"
 
 # Set git user name and email if not set
-sudo apt-get install git
+sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
   read -p "Enter github account name: " gitname

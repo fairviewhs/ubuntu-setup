@@ -51,10 +51,9 @@ fi
 # Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
   echo $GREEN"Installing node.js..."$RESET
-
-  sudo add-apt-repository ppa:chris-lea/node.js
-  sudo apt-get -qq update
-  sudo apt-get -y install nodejs npm
+  
+  curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+  sudo apt-get -y install nodejs
 fi
 
 # Install and set up postgresql:

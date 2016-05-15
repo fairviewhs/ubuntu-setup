@@ -85,6 +85,7 @@ sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev
 if [[ ! $(command -v ruby) ]]; then
   echo $GREEN"Starting installation of rvm..."$RESET
 
+  gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
   curl -L https://get.rvm.io | bash -s stable
   source ~/.rvm/scripts/rvm
   if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then

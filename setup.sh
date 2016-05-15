@@ -103,7 +103,6 @@ read -p "Do you want to clone and setup the Fairview site repository (a new fork
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  cd ..
   read -s -p "Enter password for $(git config --global user.name)": PW
   echo
   curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null

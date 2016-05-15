@@ -52,7 +52,7 @@ fi
 # Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
   echo $GREEN"Installing node.js..."$RESET
-  
+
   curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   sudo apt-get -y install nodejs
 fi
@@ -74,8 +74,8 @@ if [[ ! $(command -v psql) ]]; then
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
 
   # Create development and test databases for the fhs-rails application
-  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_development
-  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_test
+  createdb --owner="$(whoami) --template=template0 --lc-collate=C --echo fhs_development"
+  createdb --owner="$(whoami) --template=template0 --lc-collate=C --echo fhs_test"
 fi
 
 # Install other miscellaneous packages for Ruby/Rails
@@ -103,12 +103,12 @@ echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   cd ..
-  read -s -p "Enter password for "$(git config --global user.name)": " PW
+  read -s -p "Enter password for $(git config --global user.name)": PW
   echo
-  curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null
-  curl -s -u $(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+  curl -s -u "$(git config --global user.name):$PW https://api.github.com/user  > /dev/null"
+  curl -s -u "$(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null"
   sleep 60
-  git clone https://$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git
+  git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails
   gem install bundler
   bundle install

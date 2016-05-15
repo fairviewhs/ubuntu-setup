@@ -98,7 +98,7 @@ if [[ ! $(command -v ruby) ]]; then
   rvm reload
 fi
 
-read -p "Do you want to clone and setup the Fairview site repository (an new fork will be created if needed)? " -r
+read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then

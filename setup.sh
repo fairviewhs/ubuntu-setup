@@ -63,11 +63,11 @@ if [[ ! $(command -v psql) ]]; then
   echo $GREEN"Installing PostgreSQL..."$RESET
 
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ squeeze-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   fi
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   sudo apt-get -qq update
-  sudo apt-get -y install postgresql-9.4 pgadmin3 libpq-dev
+  sudo apt-get -y install postgresql-9.5 pgadmin3 libpq-dev
 
   # Create user with the same name as the current user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
@@ -82,21 +82,21 @@ fi
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install rvm, ruby, and required packages
-if [[ ! $(command -v ruby) ]]; then
-  echo $GREEN"Starting installation of rvm..."$RESET
-
-  curl -L https://get.rvm.io | bash -s stable
-  source ~/.rvm/scripts/rvm
-  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
-    echo "source ~/.bash_profile" >> ~/.bashrc
-  fi
-
-  rvm get head --autolibs=3
-  rvm requirements
-  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
-  rvm use --default $RubyVersion
-  rvm reload
-fi
+#if [[ ! $(command -v ruby) ]]; then
+#  echo $GREEN"Starting installation of rvm..."$RESET
+#
+#  curl -L https://get.rvm.io | bash -s stable
+#  source ~/.rvm/scripts/rvm
+#  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
+#    echo "source ~/.bash_profile" >> ~/.bashrc
+#  fi
+#
+#  rvm get head --autolibs=3
+#  rvm requirements
+#  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
+#  rvm use --default $RubyVersion
+#  rvm reload
+#fi
 
 read -p "Do you want to clone and setup the Fairview site repository (an new fork will be created if needed)? " -r
 echo

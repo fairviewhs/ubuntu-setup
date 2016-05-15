@@ -28,7 +28,7 @@ fi
 # Set git alias, color to auto, and credential cache
 git config --global alias.s status
 git config --global color.ui auto
-git config credential.helper 'cache --timeout=900'
+git config --global credential.helper 'cache --timeout=900'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Upgrading software packages..."$RESET

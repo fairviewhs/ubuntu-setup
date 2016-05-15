@@ -2,7 +2,7 @@
 
 # Text formatting variable definitions
 RESET=$(tput sgr0)
-cxRED=$(tput setaf 1)
+RED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 YELLOW=$(tput setaf 3)
 BLUE=$(tput setaf 4)

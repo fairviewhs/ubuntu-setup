@@ -2,7 +2,7 @@
 
 # Text formatting variable definitions
 RESET=$(tput sgr0)
-RED=$(tput setaf 1)
+cxRED=$(tput setaf 1)
 GREEN=$(tput setaf 2)
 YELLOW=$(tput setaf 3)
 BLUE=$(tput setaf 4)
@@ -11,7 +11,7 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-RubyVersion="2.2.3"
+RubyVersion="2.3.0"
 
 # Set git user name and email if not set
 sudo apt-get -y install git
@@ -82,21 +82,21 @@ fi
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install rvm, ruby, and required packages
-#if [[ ! $(command -v ruby) ]]; then
-#  echo $GREEN"Starting installation of rvm..."$RESET
-#
-#  curl -L https://get.rvm.io | bash -s stable
-#  source ~/.rvm/scripts/rvm
-#  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
-#    echo "source ~/.bash_profile" >> ~/.bashrc
-#  fi
-#
-#  rvm get head --autolibs=3
-#  rvm requirements
-#  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
-#  rvm use --default $RubyVersion
-#  rvm reload
-#fi
+if [[ ! $(command -v ruby) ]]; then
+  echo $GREEN"Starting installation of rvm..."$RESET
+
+  curl -L https://get.rvm.io | bash -s stable
+  source ~/.rvm/scripts/rvm
+  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
+    echo "source ~/.bash_profile" >> ~/.bashrc
+  fi
+
+  rvm get head --autolibs=3
+  rvm requirements
+  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
+  rvm use $RubyVersion --default
+  rvm reload
+fi
 
 read -p "Do you want to clone and setup the Fairview site repository (an new fork will be created if needed)? " -r
 echo
@@ -105,8 +105,8 @@ then
   cd ..
   read -s -p "Enter password for $(git config --global user.name)": PW
   echo
-  curl -s -u "$(git config --global user.name):$PW https://api.github.com/user  > /dev/null"
-  curl -s -u "$(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null"
+  curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null
+  curl -s -u $(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
   git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails

@@ -44,7 +44,8 @@ if [[ ! $(command -v atom) ]]; then
     sudo add-apt-repository ppa:webupd8team/atom
     sudo apt-get -qq update
     sudo apt-get -y install atom
-    apm install atom-lint merge-conflicts tabs-to-spaces
+    apm install merge-conflicts tabs-to-spaces
+    # TODO: decide on replacement for atom-lint
   fi
 fi
 

@@ -83,6 +83,7 @@ sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev
 # Install ruby and required packages
 echo $GREEN"Starting installation of Ruby..."$RESET
 sudo apt-get -y install ruby-full
+gem install bundler
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
@@ -95,7 +96,6 @@ then
   sleep 60
   git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails
-  gem install bundler
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml

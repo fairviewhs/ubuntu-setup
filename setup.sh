@@ -25,10 +25,11 @@ if [[ $(git config --global user.email) = "" ]]; then
   git config --global user.email "$gitemail"
 fi
 
-# Set git alias, color to auto, and credential cache
+# Set git aliases, color to auto, and credential cache to one hour
 git config --global alias.s status
+git config --global alias.ci commit
 git config --global color.ui auto
-git config --global credential.helper 'cache --timeout=900'
+git config --global credential.helper 'cache --timeout=3600'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Upgrading software packages..."$RESET

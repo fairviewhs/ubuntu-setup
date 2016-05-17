@@ -11,8 +11,6 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-RubyVersion="2.3.0"
-
 # Set git user name and email if not set
 sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
@@ -82,23 +80,9 @@ fi
 # Install other miscellaneous packages for Ruby/Rails
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
-# Install rvm, ruby, and required packages
-if [[ ! $(command -v ruby) ]]; then
-  echo $GREEN"Starting installation of rvm..."$RESET
-
-  gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-  curl -L https://get.rvm.io | bash -s stable
-  source ~/.rvm/scripts/rvm
-  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
-    echo "source ~/.bash_profile" >> ~/.bashrc
-  fi
-
-  rvm get head --autolibs=3
-  rvm requirements
-  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
-  rvm use $RubyVersion --default
-  rvm reload
-fi
+# Install ruby and required packages
+echo $GREEN"Starting installation of Ruby..."$RESET
+sudo apt-get -y install ruby
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo

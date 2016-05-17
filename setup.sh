@@ -75,8 +75,8 @@ if [[ ! $(command -v psql) ]]; then
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
 
   # Create development and test databases for the fhs-rails application
-  createdb --owner="$(whoami) --template=template0 --lc-collate=C --echo fhs_development"
-  createdb --owner="$(whoami) --template=template0 --lc-collate=C --echo fhs_test"
+  createdb --owner="$(whoami)" --template=template0 --lc-collate=C --echo fhs_development
+  createdb --owner="$(whoami)" --template=template0 --lc-collate=C --echo fhs_test
 fi
 
 # Install other miscellaneous packages for Ruby/Rails
@@ -106,8 +106,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
   read -s -p "Enter password for $(git config --global user.name)": PW
   echo
-  curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null
-  curl -s -u $(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+  curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null
+  curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
   git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails

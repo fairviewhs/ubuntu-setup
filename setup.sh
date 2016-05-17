@@ -83,6 +83,9 @@ sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev
 # Install ruby and required packages
 echo $GREEN"Starting installation of Ruby..."$RESET
 sudo apt-get -y install ruby-full
+if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
+  echo 'gem: --user-install' >> ~/.gemrc
+fi
 gem install bundler
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r

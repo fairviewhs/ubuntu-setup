@@ -11,8 +11,6 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-RubyVersion="2.2.3"
-
 # Set git user name and email if not set
 sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
@@ -25,10 +23,11 @@ if [[ $(git config --global user.email) = "" ]]; then
   git config --global user.email "$gitemail"
 fi
 
-# Set git alias, color to auto, and credential cache
+# Set git aliases, color to auto, and credential cache to one hour
 git config --global alias.s status
+git config --global alias.ci commit
 git config --global color.ui auto
-git config credential.helper 'cache --timeout=900'
+git config --global credential.helper 'cache --timeout=3600'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Upgrading software packages..."$RESET
@@ -44,7 +43,8 @@ if [[ ! $(command -v atom) ]]; then
     sudo add-apt-repository ppa:webupd8team/atom
     sudo apt-get -qq update
     sudo apt-get -y install atom
-    apm install atom-lint merge-conflicts tabs-to-spaces
+    apm install merge-conflicts tabs-to-spaces
+    # TODO: decide on replacement for atom-lint
   fi
 fi
 
@@ -52,65 +52,59 @@ fi
 if [[ ! $(command -v node) ]]; then
   echo $GREEN"Installing node.js..."$RESET
 
-  sudo add-apt-repository ppa:chris-lea/node.js
-  sudo apt-get -qq update
-  sudo apt-get -y install nodejs npm
+  curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+  sudo apt-get -y install nodejs
 fi
 
 # Install and set up postgresql:
 # http://wiki.postgresql.org/wiki/Apt
 if [[ ! $(command -v psql) ]]; then
-  echo $GREEN"Installing PostgreSQL..."$RESET
+  echo $GREEN"Setting up PostgreSQL..."$RESET
 
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
-    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ squeeze-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   fi
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   sudo apt-get -qq update
-  sudo apt-get -y install postgresql-9.4 pgadmin3 libpq-dev
+  sudo apt-get -y install postgresql-9.5 pgadmin3 libpq-dev
 
   # Create user with the same name as the current user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
 
   # Create development and test databases for the fhs-rails application
-  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_development
-  createdb --owner=$(whoami) --template=template0 --lc-collate=C --echo fhs_test
+  createdb --owner="$(whoami)" --template=template0 --lc-collate=C --echo fhs_development
+  createdb --owner="$(whoami)" --template=template0 --lc-collate=C --echo fhs_test
 fi
 
 # Install other miscellaneous packages for Ruby/Rails
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
-# Install rvm, ruby, and required packages
-if [[ ! $(command -v ruby) ]]; then
-  echo $GREEN"Starting installation of rvm..."$RESET
-
-  curl -L https://get.rvm.io | bash -s stable
-  source ~/.rvm/scripts/rvm
-  if [[ ! $(grep "source ~/.bash_profile" ~/.bashrc) ]]; then
-    echo "source ~/.bash_profile" >> ~/.bashrc
-  fi
-
-  rvm get head --autolibs=3
-  rvm requirements
-  rvm install $RubyVersion --with-openssl-dir=$HOME/.rvm/usr
-  rvm use --default $RubyVersion
-  rvm reload
+# Install ruby and required packages
+echo $GREEN"Setting up Ruby..."$RESET
+sudo apt-get -y install ruby-full
+if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
+  echo 'gem: --user-install' >> ~/.gemrc
 fi
+if [[ ! $(grep 'PATH="$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH"' ~/.profile) ]]; then
+  echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
+  echo '  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"' >> ~/.profile
+  echo 'fi' >> ~/.profile
+  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+  #source ~/.profile
+fi
+gem install bundler
 
-read -p "Do you want to clone and setup the Fairview site repository (an new fork will be created if needed)? " -r
+read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-  cd ..
-  read -s -p "Enter password for "$(git config --global user.name)": " PW
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  read -s -p "Enter password for $(git config --global user.name)": PW
   echo
-  curl -s -u $(git config --global user.name):$PW https://api.github.com/user  > /dev/null
-  curl -s -u $(git config --global user.name):$PW -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+  curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null
+  curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
-  git clone https://$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git
+  git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails
-  gem install bundler
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml

@@ -15,11 +15,11 @@ LINE=$(tput sgr 0 1)
 sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
-  read -p "Enter github account name: " gitname
+  read -p "Enter GitHub account name: " -r gitname
   git config --global user.name "$gitname"
 fi
 if [[ $(git config --global user.email) = "" ]]; then
-  read -p "Enter the email you use for GitHub or are planning to use: " gitemail
+  read -p "Enter the email you use for GitHub or are planning to use: " -r gitemail
   git config --global user.email "$gitemail"
 fi
 
@@ -69,7 +69,7 @@ if [[ ! $(command -v psql) ]]; then
   sudo apt-get -y install postgresql-9.5 pgadmin3 libpq-dev
 
   # Create user with the same name as the current user to access postgresql database
-  read -p "Enter the password you want to use for the PostgreSQL database: " psqlpass
+  read -p "Enter the password you want to use for the PostgreSQL database: " -r psqlpass
   sudo -u postgres psql -c "CREATE USER $(whoami) WITH PASSWORD '$psqlpass'; ALTER USER $(whoami) CREATEDB;"
 
   # Create development and test databases for the fhs-rails application
@@ -86,18 +86,17 @@ sudo apt-get -y install ruby-full
 if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
   echo 'gem: --user-install' >> ~/.gemrc
 fi
-if [[ ! $(grep 'PATH="$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH"' ~/.profile) ]]; then
+if [[ ! $(grep 'PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"' ~/.profile) ]]; then
   echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
-  echo '  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"' >> ~/.profile
+  echo '  PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"' >> ~/.profile
   echo 'fi' >> ~/.profile
-  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
-  #source ~/.profile
+  PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"
 fi
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  read -s -p "Enter password for $(git config --global user.name)": PW
+  read -s -p "Enter password for $(git config --global user.name):" -r PW
   echo
   curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null
   curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
@@ -108,5 +107,5 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml
-  rake db:setup
+  rake db:setup > /dev/null
 fi

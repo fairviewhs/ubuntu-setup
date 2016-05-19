@@ -86,7 +86,7 @@ sudo apt-get -y install ruby-full
 if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
   echo 'gem: --user-install' >> ~/.gemrc
 fi
-if [[ ! $(grep 'PATH=$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH' ~/.profile) ]]; then
+if [[ ! $(grep 'PATH="$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH"' ~/.profile) ]]; then
   echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
   echo '  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"' >> ~/.profile
   echo 'fi' >> ~/.profile

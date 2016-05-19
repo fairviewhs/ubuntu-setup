@@ -11,11 +11,11 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-# Set git user name and email if not set
+# Set git name and email if not set
 sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
-  read -p "Enter GitHub account name: " -r gitname
+  read -p "Enter your name: " -r gitname
   git config --global user.name "$gitname"
 fi
 if [[ $(git config --global user.email) = "" ]]; then
@@ -38,8 +38,7 @@ sudo apt-get -y upgrade
 if [[ ! $(command -v atom) ]]; then
   read -p "Do you want to install the Atom editor? " -r
   echo
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
     sudo add-apt-repository ppa:webupd8team/atom
     sudo apt-get -qq update
     sudo apt-get -y install atom
@@ -96,12 +95,23 @@ fi
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  read -s -p "Enter password for $(git config --global user.name):" -r PW
-  echo
-  curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null
-  curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+  read -p "Enter your GitHub username: " -r GH_USER
+  STATUS="401"
+  while [[ $STATUS != "200" ]]; do
+    read -s -p "Enter GitHub password for $GH_USER: " -r GH_PW
+    echo
+    STATUS=$(curl -isS https://api.github.com -u "$GH_USER:$GH_PW" | head -n 1 | cut -d$' ' -f2)
+    if [[ $STATUS != "200" ]]; then
+      echo $RED"Could not authenticate, got status code $STATUS, try again"$RESET
+    fi
+  done
+
+  echo $GREEN"Authenticated successfully, now setting up the repository..."$RESET
+
+  curl -s -u "$GH_USER:$GH_PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
-  git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
+  git clone https://"$GH_USER:$GH_PW@github.com/$GH_USER/fhs-rails.git"
+  git remote add upstream https://github.com/fairviewhs.org/fhs-rails.git
   cd fhs-rails
   gem install bundler
   bundle install
@@ -109,3 +119,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   cp config/database.yml.sample config/database.yml
   rake db:setup > /dev/null
 fi
+

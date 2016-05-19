@@ -59,7 +59,7 @@ fi
 # Install and set up postgresql:
 # http://wiki.postgresql.org/wiki/Apt
 if [[ ! $(command -v psql) ]]; then
-  echo $GREEN"Installing PostgreSQL..."$RESET
+  echo $GREEN"Setting up PostgreSQL..."$RESET
 
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
     sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -81,17 +81,23 @@ fi
 sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install ruby and required packages
-echo $GREEN"Starting installation of Ruby..."$RESET
+echo $GREEN"Setting up Ruby..."$RESET
 sudo apt-get -y install ruby-full
 if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
   echo 'gem: --user-install' >> ~/.gemrc
+fi
+if [[ ! $(grep 'PATH=$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH' ~/.profile) ]]; then
+  echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
+  echo '  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"' >> ~/.profile
+  echo 'fi' >> ~/.profile
+  PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+  #source ~/.profile
 fi
 gem install bundler
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
+if [[ $REPLY =~ ^[Yy]$ ]]; then
   read -s -p "Enter password for $(git config --global user.name)": PW
   echo
   curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null

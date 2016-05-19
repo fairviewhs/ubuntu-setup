@@ -94,19 +94,34 @@ if [[ ! $(grep 'PATH="$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH"' ~/.prof
   #source ~/.profile
 fi
 
-read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  read -s -p "Enter password for $(git config --global user.name)": PW
+if [ ! -f fhs-rails ]; then
+  read -p "Do you want to clone and setup the Fairview site repository? " -r
   echo
-  curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user  > /dev/null
-  curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
-  sleep 60
-  git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
-  cd fhs-rails
-  gem install bundler
-  bundle install
-  cp config/secrets.yml.sample config/secrets.yml
-  cp config/database.yml.sample config/database.yml
-  rake db:setup
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    read -s -p "Enter password for $(git config --global user.name)": PW
+    echo
+    while [[ curl -s -u "$(git config --global user.name):$PW" https://api.github.com/user == *"Bad credentials"* ]]; do
+      echo "Login Failed!";
+      read -s -p "Enter password for $(git config --global user.name)": PW
+      echo
+    done
+    if [[ curl -s -u "$(git config --global user.name):$PW" https://api.github.com/repos/$(git config --global user.name)/fhs-rails == *"Not Found"* ]]; then
+      read -p "You do not have a fork for the Fairview Repo, would you like to create one? " -r
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo $GREEN"Forking Repository"$RESET
+        curl -s -u "$(git config --global user.name):$PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
+        while [[ curl -s -u "$(git config --global user.name):$PW" https://api.github.com/repos/$(git config --global user.name)/fhs-rails == *"Not Found"* ]]; do
+          sleep 1
+        done
+      fi
+    fi
+
+    git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
+    cd fhs-rails
+    gem install bundler
+    bundle install
+    cp config/secrets.yml.sample config/secrets.yml
+    cp config/database.yml.sample config/database.yml
+    rake db:setup
+  fi
 fi

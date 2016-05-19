@@ -93,7 +93,6 @@ if [[ ! $(grep 'PATH="$(ruby -rubygems -e puts Gem.user_dir)/bin:$PATH"' ~/.prof
   PATH="$(ruby -rubygems -e 'puts Gem.user_dir')/bin:$PATH"
   #source ~/.profile
 fi
-gem install bundler
 
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
@@ -105,6 +104,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   sleep 60
   git clone https://"$(git config --global user.name):$PW@github.com/$(git config --global user.name)/fhs-rails.git"
   cd fhs-rails
+  gem install bundler
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml

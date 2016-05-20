@@ -85,7 +85,7 @@ sudo apt-get -y install ruby-full
 if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
   echo 'gem: --user-install' >> ~/.gemrc
 fi
-if [[ ! $(grep 'PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"' ~/.profile) ]]; then
+if [[ ! $(grep 'PATH="$PATH:$(ruby -rubygems -e puts Gem.user_dir)/bin"' ~/.profile) ]]; then
   echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
   echo '  PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"' >> ~/.profile
   echo 'fi' >> ~/.profile
@@ -119,4 +119,3 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   cp config/database.yml.sample config/database.yml
   rake db:setup > /dev/null
 fi
-

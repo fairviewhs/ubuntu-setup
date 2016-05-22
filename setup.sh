@@ -82,14 +82,19 @@ sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev
 # Install ruby and required packages
 echo $GREEN"Setting up Ruby..."$RESET
 sudo apt-get -y install ruby-full
-if [[ ! $(grep 'gem: --user-install' ~/.gemrc) ]]; then
+
+# Make gems be installed locally by default
+if ! grep -q 'gem -user-install' ~/.gemrc; then
   echo 'gem: --user-install' >> ~/.gemrc
 fi
-if [[ ! $(grep 'PATH='\"'$PATH:$(ruby -rubygems -e '\''puts Gem.user_dir'\'')/bin'\" ~/.profile) ]]; then
-  echo >> ~/.profile
-  echo 'if which ruby >/dev/null && which gem >/dev/null; then' >> ~/.profile
-  echo '  PATH='\"'$PATH:$(ruby -rubygems -e '\'puts Gem.user_dir\'')/bin'\" >> ~/.profile
-  echo 'fi' >> ~/.profile
+
+if ! grep -q 'PATH='\"'$PATH:$(ruby -rubygems -e '\''puts Gem.user_dir'\'')/bin'\" ~/.profile; then
+  {
+    echo
+    echo 'if which ruby >/dev/null && which gem >/dev/null; then'
+    echo '  PATH='\"'$PATH:$(ruby -rubygems -e '\''puts Gem.user_dir'\'')/bin'\"
+    echo 'fi'
+  } >> ~/.profile
   PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"
 fi
 
@@ -113,7 +118,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   sleep 60
   git clone https://"$GH_USER:$GH_PW@github.com/$GH_USER/fhs-rails.git"
   git remote add upstream https://github.com/fairviewhs.org/fhs-rails.git
-  cd fhs-rails
+  cd fhs-rails || exit
   gem install bundler
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
@@ -124,7 +129,7 @@ fi
 echo $GREEN"Setup has completed."$RESET
 echo $BLUE"Note: you must reboot for everything to work properly."$RESET
 
-read -p "Would you like to reboot now?" -r
+read -p "Would you like to reboot now? " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   reboot
 fi

@@ -12,6 +12,7 @@ BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
 # Set git name and email if not set
+sudo apt-get -qq update
 sudo apt-get -y install git
 echo $GREEN"Checking git settings..."$RESET
 if [[ $(git config --global user.name) = "" ]]; then
@@ -31,8 +32,8 @@ git config --global credential.helper 'cache --timeout=3600'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
 echo $GREEN"Upgrading software packages..."$RESET
-sudo apt-get -qq update
 sudo apt-get -y upgrade
+sudo apt-get -y install curl
 
 # Prompt to install Atom editor (optional, but recommended)
 if [[ ! $(command -v atom) ]]; then
@@ -77,7 +78,7 @@ if [[ ! $(command -v psql) ]]; then
 fi
 
 # Install other miscellaneous packages for Ruby/Rails
-sudo apt-get -y install curl libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
+sudo apt-get -y install libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install ruby and required packages
 echo $GREEN"Setting up Ruby..."$RESET

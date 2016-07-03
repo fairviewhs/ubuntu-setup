@@ -14,7 +14,7 @@ LINE=$(tput sgr 0 1)
 # Set git name and email if not set
 sudo apt-get -qq update
 sudo apt-get -y install git
-echo $GREEN"Checking git settings..."$RESET
+echo "${GREEN}Checking git settings...$RESET"
 if [[ $(git config --global user.name) = "" ]]; then
   read -p "Enter your name: " -r gitname
   git config --global user.name "$gitname"
@@ -31,7 +31,7 @@ git config --global color.ui auto
 git config --global credential.helper 'cache --timeout=3600'
 
 # Update using apt-get and install packages required for ruby/rails, etc.
-echo $GREEN"Upgrading software packages..."$RESET
+echo "${GREEN}Upgrading software packages...$RESET"
 sudo apt-get -y upgrade
 sudo apt-get -y install curl
 
@@ -50,7 +50,7 @@ fi
 
 # Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
-  echo $GREEN"Installing node.js..."$RESET
+  echo "${GREEN}Installing node.js...$RESET"
 
   curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   sudo apt-get -y install nodejs
@@ -59,7 +59,7 @@ fi
 # Install and set up postgresql:
 # http://wiki.postgresql.org/wiki/Apt
 if [[ ! $(command -v psql) ]]; then
-  echo $GREEN"Setting up PostgreSQL..."$RESET
+  echo "${GREEN}Setting up PostgreSQL...$RESET"
 
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
     sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
@@ -81,7 +81,7 @@ fi
 sudo apt-get -y install libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
 
 # Install ruby and required packages
-echo $GREEN"Setting up Ruby..."$RESET
+echo "${GREEN}Setting up Ruby...$RESET"
 sudo apt-get -y install ruby-full
 
 # Make gems be installed locally by default
@@ -109,11 +109,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo
     STATUS=$(curl -isS https://api.github.com -u "$GH_USER:$GH_PW" | head -n 1 | cut -d$' ' -f2)
     if [[ $STATUS != "200" ]]; then
-      echo $RED"Could not authenticate, got status code $STATUS, try again"$RESET
+      echo "${RED}Could not authenticate, got status code $STATUS, try again$RESET"
     fi
   done
 
-  echo $GREEN"Authenticated successfully, now setting up the repository..."$RESET
+  echo "${GREEN}Authenticated successfully, now setting up the repository...$RESET"
 
   curl -s -u "$GH_USER:$GH_PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
@@ -127,8 +127,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   rake db:setup > /dev/null
 fi
 
-echo $GREEN"Setup has completed."$RESET
-echo $BLUE"Note: you must reboot for everything to work properly."$RESET
+echo "${GREEN}Setup has completed.$RESET"
+echo "${BLUE}Note: you must reboot for everything to work properly.$RESET"
 
 read -p "Would you like to reboot now? " -r
 if [[ $REPLY =~ ^[Yy]$ ]]; then

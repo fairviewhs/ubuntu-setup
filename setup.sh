@@ -118,7 +118,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   curl -s -u "$GH_USER:$GH_PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
   git clone https://"$GH_USER:$GH_PW@github.com/$GH_USER/fhs-rails.git"
-  git remote add upstream https://github.com/fairviewhs.org/fhs-rails.git
+  git remote add upstream https://github.com/fairviewhs/fhs-rails.git
   cd fhs-rails || exit
   gem install bundler
   bundle install

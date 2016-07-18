@@ -11,9 +11,12 @@ CYAN=$(tput setaf 6)
 BOLD=$(tput bold)
 LINE=$(tput sgr 0 1)
 
-# Set git name and email if not set
+echo "${GREEN}Upgrading software packages...$RESET"
 sudo apt-get -qq update
-sudo apt-get -y install git
+sudo apt-get -y upgrade
+
+# Install and configure git; install curl
+sudo apt-get -y install git curl
 echo "${GREEN}Checking git settings...$RESET"
 if [[ $(git config --global user.name) = "" ]]; then
   read -p "Enter your name: " -r gitname
@@ -29,11 +32,6 @@ git config --global alias.s status
 git config --global alias.ci commit
 git config --global color.ui auto
 git config --global credential.helper 'cache --timeout=3600'
-
-# Update using apt-get and install packages required for ruby/rails, etc.
-echo "${GREEN}Upgrading software packages...$RESET"
-sudo apt-get -y upgrade
-sudo apt-get -y install curl
 
 # Prompt to install Atom editor (optional, but recommended)
 if [[ ! $(command -v atom) ]]; then

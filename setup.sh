@@ -41,15 +41,13 @@ if [[ ! $(command -v atom) ]]; then
     sudo add-apt-repository ppa:webupd8team/atom
     sudo apt-get -qq update
     sudo apt-get -y install atom
-    apm install merge-conflicts tabs-to-spaces
-    # TODO: decide on replacement for atom-lint
+    apm install merge-conflicts tabs-to-spaces linter linter-rubocop linter-scss-lint linter-erb
   fi
 fi
 
 # Install node.js for an execjs runtime
 if [[ ! $(command -v node) ]]; then
   echo "${GREEN}Installing node.js...$RESET"
-
   curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
   sudo apt-get -y install nodejs
 fi
@@ -58,7 +56,6 @@ fi
 # http://wiki.postgresql.org/wiki/Apt
 if [[ ! $(command -v psql) ]]; then
   echo "${GREEN}Setting up PostgreSQL...$RESET"
-
   if [[ ! -a "/etc/apt/sources.list.d/pgdg.list" ]]; then
     sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
   fi
@@ -97,6 +94,8 @@ if ! grep -q 'PATH='\"'$PATH:$(ruby -rubygems -e '\''puts Gem.user_dir'\'')/bin'
   PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"
 fi
 
+gem install -q rubocop scss-lint
+
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -112,7 +111,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   done
 
   echo "${GREEN}Authenticated successfully, now setting up the repository...$RESET"
-
   curl -s -u "$GH_USER:$GH_PW" -X POST https://api.github.com/repos/fairviewhs/fhs-rails/forks  > /dev/null
   sleep 60
   git clone https://"$GH_USER:$GH_PW@github.com/$GH_USER/fhs-rails.git"

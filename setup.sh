@@ -97,8 +97,6 @@ if ! grep -q 'PATH='\"'$PATH:$(ruby -rubygems -e '\''puts Gem.user_dir'\'')/bin'
   PATH="$PATH:$(ruby -rubygems -e 'puts Gem.user_dir')/bin"
 fi
 
-gem install -q rubocop scss-lint
-
 read -p "Do you want to clone and setup the Fairview site repository (a new fork will be created if needed)? " -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then

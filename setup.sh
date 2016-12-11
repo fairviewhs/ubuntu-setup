@@ -121,7 +121,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml
-  rake db:setup > /dev/null
+  bundle exec rake db:setup > /dev/null
 fi
 
 echo "${GREEN}Setup has completed.$RESET"

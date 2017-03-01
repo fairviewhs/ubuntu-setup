@@ -76,7 +76,7 @@ if [[ ! $(command -v psql) ]]; then
 fi
 
 # Install other miscellaneous packages for Ruby/Rails
-sudo apt-get -y install libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev
+sudo apt-get -y install libyaml-dev libxslt1-dev libxml2-dev libsqlite3-dev python-software-properties libmagickwand-dev openjdk-8-jdk
 
 # Install ruby and required packages
 echo "${GREEN}Setting up Ruby...$RESET"

@@ -64,7 +64,7 @@ if [[ ! $(command -v psql) ]]; then
   fi
   wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
   sudo apt-get -qq update
-  sudo apt-get -y install postgresql-9.5 pgadmin3 libpq-dev
+  sudo apt-get -y install postgresql-9.6 pgadmin3 libpq-dev
 
   # Create user with the same name as the current user to access postgresql database
   read -p "Enter the password you want to use for the PostgreSQL database: " -r psqlpass
@@ -121,7 +121,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   bundle install
   cp config/secrets.yml.sample config/secrets.yml
   cp config/database.yml.sample config/database.yml
-  bundle exec rake db:setup > /dev/null
+  bin/rails sunspot:solr:start
+  bin/rails db:setup > /dev/null
 fi
 
 echo "${GREEN}Setup has completed.$RESET"
